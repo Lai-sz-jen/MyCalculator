@@ -13,8 +13,17 @@ class Controller:
         self._view.run()
         
     def process(self) -> None:
-        result = self._model.calculate(self._view.fetch())
-        self._view.display(result)
+        expr = self._view.fetch()
+        if not expr:
+            self._view.clear()
+            return
+        
+        try:
+            result = self._model.calculate(expr)
+        except (SyntaxError, ZeroDivisionError):
+            self._view.display("err")
+        else:
+            self._view.display(result)
         
 class CalculatorModel:
     def calculate(self, expr: str) -> str:
@@ -97,9 +106,13 @@ class CalculatorUI:
     def fetch(self) -> str:
         return self._expression
     
-    def display(self, result) -> None:
-        self._expression = f"{result:g}"
-        self._repr()
+    def display(self, result: int|float|str) -> None:
+        if isinstance(result, (int, float)):
+            self._expression = f"{result:g}"
+            self._repr()
+        else:
+            self._expression = ""
+            self._display.config(text=result)
         
     def keyboard_input(self, event) -> None:
         valid_char = "0123456789.+-*/()"
