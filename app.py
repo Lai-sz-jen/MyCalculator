@@ -35,7 +35,7 @@ class CalculatorUI:
         root.bind("<BackSpace>", lambda e: self.backspace())
         root.bind("<Return>", lambda e: callback())
         
-        expression = tk.Entry(root)
+        expression = ""
         expression_repr = tk.Label(root, font=("Arial", 20), anchor="se")
         expression_repr.grid(row=0, column=0, sticky="news")
         
@@ -74,7 +74,7 @@ class CalculatorUI:
         self._root = root
        
     def _repr(self) -> None:
-        display_txt = (self._expression.get()
+        display_txt = (self._expression
                        .replace("*", "\u00D7")
                        .replace("/", "\u00F7"))
         self._display.config(text=display_txt) 
@@ -83,28 +83,26 @@ class CalculatorUI:
         self._root.mainloop()
         
     def press(self, char: str) -> None:
-        self._expression.insert(tk.END, char)
+        self._expression += char
         self._repr()
         
     def clear(self) -> None:
-        self._expression.delete(0, tk.END)
+        self._expression = ""
         self._repr()
         
     def backspace(self) -> None:
-        last = len(self._expression.get()) - 1
-        self._expression.delete(last)
+        self._expression = self._expression[:-1]
         self._repr()
     
     def fetch(self) -> str:
-        return self._expression.get()
+        return self._expression
     
     def display(self, result) -> None:
-        self.clear()
-        self._expression.insert(0, f"{result:g}")
+        self._expression = f"{result:g}"
         self._repr()
         
     def keyboard_input(self, event) -> None:
-        valid_char = "0123456789.+-*/"
+        valid_char = "0123456789.+-*/()"
         if event.char in valid_char:
             self.press(event.char)
     
