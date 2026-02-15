@@ -29,10 +29,16 @@ class CalculatorUI:
         root.rowconfigure(0, weight=1)
         root.rowconfigure(1, weight=2)
         root.columnconfigure(0, weight=1)
+    
+        root.bind("<Key>", self.keyboard_input)
+        root.bind("<C>", lambda e: self.clear()) # must be capital C
+        root.bind("<BackSpace>", lambda e: self.backspace())
+        root.bind("<Return>", lambda e: callback())
         
         expression = tk.Entry(root)
         expression_repr = tk.Label(root, font=("Arial", 20), anchor="se")
         expression_repr.grid(row=0, column=0, sticky="news")
+        
         self._expression = expression
         self._display = expression_repr
         
@@ -97,6 +103,10 @@ class CalculatorUI:
         self._expression.insert(0, f"{result:g}")
         self._repr()
         
-        
+    def keyboard_input(self, event) -> None:
+        valid_char = "0123456789.+-*/"
+        if event.char in valid_char:
+            self.press(event.char)
+    
 if __name__ == "__main__":
     app = Controller()
